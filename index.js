@@ -1,8 +1,8 @@
 import { menuItemsArr } from "./menuobj.js";
 
 const menuItems = document.getElementById("menu-items");
-const menuModal = document.createElement("div");
-menuModal.classList.add("show-order-modal");
+// const menuModal = document.createElement("div");
+// menuModal.classList.add("show-order-modal");
 
 function getMenuItemsHtml() {
   const createStarRating = (rating, total = 5) => {
@@ -39,7 +39,6 @@ function getMenuItemsHtml() {
     })
     .join("");
   return getMenu;
-  //   console.log(getMenu);
 }
 
 document.getElementById("menu-items").innerHTML = getMenuItemsHtml();
@@ -49,21 +48,13 @@ menuItems.addEventListener("click", (e) => {
   const targetElement = e.target.closest("[id]");
 
   if (targetElement) {
-    showOrderModal();
-
-    const modalContainer = document.getElementById("show-order");
-
-    if (!modalContainer.classList.contains("active")) {
-      modalContainer.innerHTML = showOrderModal();
-      modalContainer.classList.add("active");
-    }
-    // else {
-    //   modalContainer.classList.remove("active");
-    // } //review this part
+    // showOrderModal();
+    addClassToModalContainer();
 
     const menuItem = targetElement.closest(".menu-item");
 
     if (menuItem) {
+      showOrderModal();
       const menuTitle = menuItem.querySelector(".details h3").textContent;
       const menuPrice = menuItem.querySelector(".details .price").textContent;
 
@@ -95,23 +86,24 @@ menuItems.addEventListener("click", (e) => {
       }
 
       checkOrderContent();
-
-      // Update the total price
-      const getTotalPrice = () => {
-        const prices = document.querySelectorAll("#price li");
-        let totalPrice = 0;
-        prices.forEach((price) => {
-          totalPrice += parseInt(price.textContent.slice(2));
-        });
-        return totalPrice;
-      };
-
-      document.getElementById("total-price").innerHTML = `
-        ₱ ${getTotalPrice()}
-      `;
+      computeTotalPrice();
+    } else {
+      const itemsList = document.getElementById("items");
+      if (!itemsList || itemsList.children.length === 0) {
+        const modalContainer = document.getElementById("show-order");
+        if (modalContainer) {
+          modalContainer.classList.remove("active");
+        }
+      }
     }
-
     adjustFooterHeight();
+  } else {
+    if (!itemsList || itemsList.children.length === 0) {
+      const modalContainer = document.getElementById("show-order");
+      if (modalContainer) {
+        modalContainer.classList.remove("active");
+      }
+    }
   }
 });
 
@@ -146,4 +138,28 @@ function checkOrderContent() {
 function adjustFooterHeight() {
   const footer = document.getElementById("footer");
   footer.style.height = "25vh";
+}
+
+function addClassToModalContainer() {
+  const modalContainer = document.getElementById("show-order");
+
+  if (!modalContainer.classList.contains("active")) {
+    modalContainer.innerHTML = showOrderModal();
+    modalContainer.classList.add("active");
+  }
+}
+
+function computeTotalPrice() {
+  const getTotalPrice = () => {
+    const prices = document.querySelectorAll("#price li");
+    let totalPrice = 0;
+    prices.forEach((price) => {
+      totalPrice += parseInt(price.textContent.slice(2));
+    });
+    return totalPrice;
+  };
+
+  document.getElementById("total-price").innerHTML = `
+        ₱ ${getTotalPrice()}
+      `;
 }
