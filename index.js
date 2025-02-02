@@ -1,8 +1,6 @@
 import { menuItemsArr } from "./menuobj.js";
 
 const menuItems = document.getElementById("menu-items");
-// const menuModal = document.createElement("div");
-// menuModal.classList.add("show-order-modal");
 
 function getMenuItemsHtml() {
   const createStarRating = (rating, total = 5) => {
@@ -107,6 +105,15 @@ menuItems.addEventListener("click", (e) => {
   }
 });
 
+function addClassToModalContainer() {
+  const modalContainer = document.getElementById("show-order");
+
+  if (!modalContainer.classList.contains("active")) {
+    modalContainer.innerHTML = showOrderModal();
+    modalContainer.classList.add("active");
+  }
+}
+
 function showOrderModal() {
   const orderModal = `
     <h3>Your Order</h3>
@@ -122,6 +129,13 @@ function showOrderModal() {
       </div>
       <button class="complete-order" id="complete-order">Complete Order</button>
     `;
+
+  const completeOrderBtn = document.getElementById("complete-order");
+
+  if (completeOrderBtn) {
+    completeOrderBtn.addEventListener("click", showPaymentDetailsModal);
+  }
+
   return orderModal;
 }
 
@@ -132,20 +146,6 @@ function checkOrderContent() {
 
   if (itemsList.children.length === 0 && pricesList.children.length === 0) {
     showOrderModal.classList.remove("active");
-  }
-}
-
-function adjustFooterHeight() {
-  const footer = document.getElementById("footer");
-  footer.style.height = "25vh";
-}
-
-function addClassToModalContainer() {
-  const modalContainer = document.getElementById("show-order");
-
-  if (!modalContainer.classList.contains("active")) {
-    modalContainer.innerHTML = showOrderModal();
-    modalContainer.classList.add("active");
   }
 }
 
@@ -162,4 +162,91 @@ function computeTotalPrice() {
   document.getElementById("total-price").innerHTML = `
         ₱ ${getTotalPrice()}
       `;
+}
+
+function adjustFooterHeight() {
+  const footer = document.getElementById("footer");
+  footer.style.height = "25vh";
+}
+
+function showPaymentDetailsModal() {
+  const paymentDetailsModal = document.getElementById("payment-details");
+
+  paymentDetailsModal.innerHTML = `
+    <i class="fa-solid fa-times close-modal" id="close-modal"></i>
+    <h3 class="payemnt-heading-text">Enter Card Details</h3>
+      <form id="payment-form" class="payment-form">
+        <label for="name"></label>
+        <input
+          type="text"
+          id="name"
+          name="name"
+          placeholder="Enter your name"
+          required
+        />
+        <label for="card-number"></label>
+        <input
+          type="text"
+          id="card-number"
+          name="number"
+          inputmode="numeric"
+          pattern="[0-9\s]{13,19}"
+          maxlength="19"
+          placeholder="xxxx xxxx xxxx xxxx"
+          required
+        />
+        <label for="cvv"></label>
+        <input
+          type="text"
+          id="cvv"
+          name="cvv"
+          inputmode="numeric"
+          pattern="[0-9]{3,4}"
+          maxlength="4"
+          placeholder="Enter CVV"
+          required
+        />
+        <button type="submit" id="submit-payment" class="submit-btn">
+          Pay
+        </button>
+      </form>
+  `;
+
+  paymentDetailsModal.classList.add("active");
+
+  const closeModal = document.getElementById("close-modal");
+  closeModal.addEventListener("click", closePaymentDetailsModal);
+
+  const paymentForm = document.getElementById("payment-form");
+  paymentForm.addEventListener("submit", paymentSubmitted);
+}
+
+function closePaymentDetailsModal() {
+  const paymentDetailsModal = document.getElementById("payment-details");
+  paymentDetailsModal.classList.remove("active");
+}
+
+function paymentSubmitted(e) {
+  e.preventDefault();
+  const nameValue = document.getElementById("name").value;
+
+  const endText = `
+    <p class="thank-you-txt">Thanks ${nameValue}, your order is on its way!</p>`;
+
+  const endTextModal = document.getElementById("end-text-modal");
+
+  const paymentDetailsModal = document.getElementById("payment-details");
+  paymentDetailsModal.classList.remove("active");
+
+  if (!endTextModal.classList.contains("active")) {
+    endTextModal.classList.add("active");
+    endTextModal.innerHTML = endText;
+
+    const showOrder = document.getElementById("show-order");
+    showOrder.classList.remove("active");
+
+    setTimeout(() => {
+      endTextModal.classList.remove("active");
+    }, 5000);
+  }
 }
