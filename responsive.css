@@ -1,0 +1,25 @@
+@media (max-width: 480px) {
+  .img-container img {
+    width: 70%;
+    height: 70%;
+  }
+
+  .details {
+    padding-left: 0.5rem;
+  }
+
+  .details h3 {
+    font-size: 1.4rem;
+  }
+
+  .details p {
+    font-size: 1.2rem;
+  }
+
+  .add-to-cart-btn {
+    margin-left: 1rem;
+    width: 3rem;
+    height: 3rem;
+    font-size: 2rem;
+  }
+}
